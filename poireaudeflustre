@@ -1,0 +1,82 @@
+//--------------------------------
+//------- ma petite IA claquée au sol -----------
+//--------------------------------
+//fonctions
+function attack(weapon, enemy) {
+		useWeapon(enemy);
+		useWeapon(enemy);}
+
+function kicknull(array){
+var newarray=[]
+for(var k in array){
+	if (k != null){
+		push(newarray, k)}
+	}
+return newarray
+}
+
+function cases_tir(tot_mp,enemy,cell) {
+	// une fonction retournant les cases atteignables d'où on peut tirer sur un ennemi
+	var x,y =0
+	var positions, positions_nrv = []
+	var posx = getCellX(cell)
+	var posy = getCellY(cell)  
+	for (x= -tot_mp; x<= tot_mp; x++) { //coords en X des cases atteignables
+		for (y= -tot_mp; y<= tot_mp; y++){
+			var cellule = getCellFromXY(posx+x,posy+y);
+
+			if(abs(x)+abs(y)<=tot_mp) {
+				if (cellule != null){
+				push(positions,cellule)
+				positions=kicknull(positions)
+				if(lineOfSight(cellule,getCell(enemy)) == true){
+					push(positions_nrv, cellule)}
+					//debug("en cours" + positions_nrv)
+				}
+			//debug("cellule nulle en cours") // XPTDR PORUQUOI CA BUGG ? pêut etre faut que je les compte pour estimer si c'est bien juste les cellules hors-champs'
+			}
+		}
+	}
+	positions=kicknull(positions) // on enlève les positions inaccessibles
+// on pourrait aussi enlever celles qui sont pas marchables
+	debug("positions nrv en fin de tour" + positions_nrv)
+	return positions_nrv
+}	
+	//var n_cellules_atteignables = pow(tot_mp-1,2)-pow(tot_mp-2,2) // compter le nombre de cases atteignables avec X pms
+function choix_case_tir(cellules,enemy) {
+//rendre la case qui permet de tirer sur l'ennemi à partir des cases atteignables en utilisant le moins de PM / en s'écartant le plus de lui
+	var n_cellule_choisie = 0
+	var dist_positions = []
+	for(var cellule in cellules){
+		var dist = getDistance(cellule, getCell(enemy))
+		push(dist_positions,dist)
+		debug(count(dist_positions,cellules))
+	}
+	 n_cellule_choisie = search(arrayMax(dist_positions))
+	debug(cellules[n_cellule_choisie])
+	debug(search(arrayMax(dist_positions)))
+	return cellules[n_cellule_choisie]
+}
+
+// menace potentielle 
+var enemy = getNearestEnemy();
+var enemy_MP = getMP(enemy);
+var enemy_weapon = getWeapon(enemy);
+var portee_max = getWeaponMaxRange(enemy_weapon)+enemy_MP;
+
+// trouver cellule idéale
+var tot_mp = getMP()
+var case_cible = cases_tir(getMP(),enemy,getCell()) 
+
+//deplacement
+moveTowardCell(case_cible)
+
+// tir 
+
+setWeapon(WEAPON_PISTOL); // coûte x PT
+useWeapon(enemy);
+
+//fuite 
+//moveTowardCell(cellule_fuite)
+
+
